@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ورود به حساب | AutoMotor</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; }
+
+:root {
+    --black: #0d0d0d;
+    --dark: #1a1a1a;
+    --gray-dark: #2a2a2a;
+    --gray: #3a3a3a;
+    --gray-mid: #555;
+    --gray-light: #888;
+    --gray-lighter: #b0b0b0;
+    --white: #f5f5f5;
+    --border: #333;
+    --error: #e74c3c;
+    --success: #2ecc71;
+}
+
+body {
+    background: var(--black);
+    color: var(--white);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-image:
+        radial-gradient(circle at 20% 20%, rgba(80,80,80,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(60,60,60,0.15) 0%, transparent 50%);
+}
+
+.form-container {
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 45px 40px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+    animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.form-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--gray-mid), var(--gray-light), var(--gray-mid));
+}
+
+/* Header */
+.form-header {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.form-logo {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, var(--gray-mid), var(--gray));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    margin: 0 auto 20px;
+    border: 2px solid var(--gray-light);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
+.form-header h1 {
+    font-size: 26px;
+    margin-bottom: 8px;
+    color: var(--white);
+}
+
+.form-header p {
+    color: var(--gray-light);
+    font-size: 14px;
+}
+
+/* Form */
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    color: var(--gray-lighter);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.form-group label .required {
+    color: var(--error);
+    margin-right: 3px;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    right: 15px;
+    font-size: 16px;
+    color: var(--gray-light);
+    pointer-events: none;
+    transition: color 0.3s;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 14px 45px 14px 15px;
+    background: var(--gray-dark);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    color: var(--white);
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.3s;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--gray-light);
+    background: var(--gray);
+    box-shadow: 0 0 0 4px rgba(136,136,136,0.1);
+}
+
+.form-group input:focus + .input-icon {
+    color: var(--white);
+}
+
+/* Validation states */
+.form-group.error input {
+    border-color: var(--error);
+    background: rgba(231,76,60,0.05);
+}
+
+.form-group.success input {
+    border-color: var(--success);
+    background: rgba(46,204,113,0.05);
+}
+
+.error-message {
+    color: var(--error);
+    font-size: 12px;
+    margin-top: 6px;
+    display: none;
+    padding-right: 5px;
+}
+
+.form-group.error .error-message {
+    display: block;
+    animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Password toggle */
+.password-toggle {
+    position: absolute;
+    left: 15px;
+    background: none;
+    border: none;
+    color: var(--gray-light);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px;
+    transition: color 0.3s;
+}
+
+.password-toggle:hover {
+    color: var(--white);
+}
+
+/* Remember & Forgot */
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    font-size: 13px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--gray-lighter);
+    cursor: pointer;
+}
+
+.remember-me input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--gray-mid);
+}
+
+.forgot-link {
+    color: var(--gray-light);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.forgot-link:hover {
+    color: var(--white);
+    text-decoration: underline;
+}
+
+/* Buttons */
+.btn-submit {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, var(--gray-mid), var(--gray));
+    border: 1px solid var(--gray-light);
+    border-radius: 10px;
+    color: var(--white);
+    font-size: 15px;
+    font-weight: bold;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-submit:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--gray), var(--gray-mid));
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+}
+
+.btn-submit:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Loading spinner */
+.spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: var(--white);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.btn-submit.loading .spinner { display: block; }
+.btn-submit.loading .btn-text { display: none; }
+
+/* Register link */
+.register-link {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 13px;
+    color: var(--gray-light);
+}
+
+.register-link a {
+    color: var(--white);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.register-link a:hover {
+    color: var(--gray-lighter);
+    text-decoration: underline;
+}
+
+/* Success message */
+.success-message {
+    display: none;
+    text-align: center;
+    padding: 20px 0;
+    animation: slideUp 0.5s ease;
+}
+
+.success-message .check-icon {
+    width: 80px;
+    height: 80px;
+    background: rgba(46,204,113,0.15);
+    border: 3px solid var(--success);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    margin: 0 auto 20px;
+    color: var(--success);
+    animation: popIn 0.5s ease;
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); }
+    70% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+.success-message h2 {
+    font-size: 22px;
+    color: var(--success);
+    margin-bottom: 10px;
+}
+
+.success-message p {
+    color: var(--gray-lighter);
+    font-size: 14px;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+    .form-container {
+        padding: 35px 25px;
+        border-radius: 12px;
+    }
+    .form-header h1 { font-size: 22px; }
+    .form-logo { width: 60px; height: 60px; font-size: 26px; }
+}
+
+/* Divider */
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 25px 0;
+    color: var(--gray-light);
+    font-size: 12px;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+/* Social buttons */
+.social-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.btn-social {
+    padding: 12px;
+    background: var(--gray-dark);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--gray-lighter);
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-social:hover {
+    background: var(--gray);
+    color: var(--white);
+    border-color: var(--gray-mid);
+}
+
+/* Back link */
+.back-link {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: var(--gray-light);
+    font-size: 13px;
+    text-decoration: none;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.back-link:hover {
+    color: var(--white);
+}
+
+/* ===== هشدار ===== */
+.alert-box {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-120px);
+    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+    border: 2px solid var(--error);
+    border-radius: 12px;
+    padding: 15px 25px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--white);
+    font-size: 14px;
+    box-shadow: 0 15px 40px rgba(231, 76, 60, 0.3);
+    z-index: 9999;
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    max-width: 90%;
+    direction: rtl;
+}
+
+.alert-box.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.alert-box.success-alert {
+    border-color: var(--success);
+    box-shadow: 0 15px 40px rgba(46, 204, 113, 0.3);
+}
+
+.alert-icon {
+    font-size: 20px;
+}
+
+.alert-text {
+    flex: 1;
+    line-height: 1.5;
+}
+
+.alert-close {
+    background: none;
+    border: none;
+    color: var(--gray-light);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.3s;
+    font-family: inherit;
+}
+
+.alert-close:hover {
+    color: var(--error);
+}
+</style>
+</head>
+<body>
+
+<!-- هشدار -->
+<div id="alertBox" class="alert-box" style="display:none;">
+    <span class="alert-icon" id="alertIcon">⚠️</span>
+    <span class="alert-text" id="alertText"></span>
+    <button class="alert-close" onclick="closeAlert()">✕</button>
+</div>
+
+<div class="form-container" id="formContainer">
+
+    <a href="index.html" class="back-link">→ بازگشت</a>
+
+    <div class="form-header">
+        <div class="form-logo">🚗</div>
+        <h1>ورود به حساب کاربری</h1>
+        <p>خوش آمدید! لطفاً وارد شوید</p>
+    </div>
+
+    <form id="loginForm" novalidate>
+
+        <!-- کد ملی -->
+        <div class="form-group" id="group-national">
+            <label>کد ملی <span class="required">*</span></label>
+            <div class="input-wrapper">
+                <input type="text" id="nationalCode" placeholder="۱۰ رقم بدون خط تیره" maxlength="10" inputmode="numeric" autocomplete="username" dir="ltr">
+                <span class="input-icon">🆔</span>
+            </div>
+            <div class="error-message">کد ملی باید ۱۰ رقم عددی باشد</div>
+        </div>
+
+        <!-- رمز عبور -->
+        <div class="form-group" id="group-password">
+            <label>رمز عبور <span class="required">*</span></label>
+            <div class="input-wrapper">
+                <input type="password" id="password" placeholder="رمز عبور خود را وارد کنید" autocomplete="current-password">
+                <span class="input-icon">🔒</span>
+                <button type="button" class="password-toggle" id="togglePassword" title="نمایش رمز">👁️</button>
+            </div>
+            <div class="error-message">رمز عبور باید حداقل ۸ کاراکتر باشد</div>
+        </div>
+
+        <!-- گزینه‌ها -->
+        <div class="form-options">
+            <label class="remember-me">
+                <input type="checkbox" id="remember">
+                <span>مرا به خاطر بسپار</span>
+            </label>
+            <a href="#" class="forgot-link">رمز عبور را فراموش کرده‌اید؟</a>
+        </div>
+
+        <!-- دکمه ورود -->
+        <button type="submit" class="btn-submit" id="submitBtn">
+            <span class="btn-text">ورود به حساب</span>
+            <span class="spinner"></span>
+        </button>
+
+    </form>
+
+    <div class="divider">یا ورود با</div>
+
+    <div class="social-buttons">
+        <button type="button" class="btn-social">🔵 گوگل</button>
+        <button type="button" class="btn-social">⚫ گیت‌هاب</button>
+    </div>
+
+    <div class="register-link">
+        حساب کاربری ندارید؟ <a href="Sign Up.html">ثبت‌نام کنید</a>
+    </div>
+
+</div>
+
+<!-- پیام موفقیت -->
+<div class="form-container success-message" id="successMessage" style="display:none;">
+    <div class="check-icon">✓</div>
+    <h2>ورود موفق! 🎉</h2>
+    <p>خوش آمدید! در حال انتقال به صفحه اصلی...</p>
+</div>
+
+<script>
+const form = document.getElementById('loginForm');
+const submitBtn = document.getElementById('submitBtn');
+const formContainer = document.getElementById('formContainer');
+const successMessage = document.getElementById('successMessage');
+
+/* ===== نمایش/مخفی کردن رمز ===== */
+const togglePassword = document.getElementById('togglePassword');
+const passwordInput = document.getElementById('password');
+
+togglePassword.addEventListener('click', () => {
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        togglePassword.textContent = '🙈';
+    } else {
+        passwordInput.type = 'password';
+        togglePassword.textContent = '👁️';
+    }
+});
+
+/* ===== فقط عدد برای کد ملی ===== */
+document.getElementById('nationalCode').addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+});
+
+/* ===== اعتبارسنجی ===== */
+function setError(groupId) {
+    document.getElementById(groupId).classList.add('error');
+    document.getElementById(groupId).classList.remove('success');
+}
+
+function setSuccess(groupId) {
+    document.getElementById(groupId).classList.remove('error');
+    document.getElementById(groupId).classList.add('success');
+}
+
+/* اعتبارسنجی لحظه‌ای */
+document.getElementById('nationalCode').addEventListener('blur', function() {
+    if (!/^[0-9]{10}$/.test(this.value)) setError('group-national');
+    else setSuccess('group-national');
+});
+
+document.getElementById('password').addEventListener('blur', function() {
+    if (this.value.length < 8) setError('group-password');
+    else setSuccess('group-password');
+});
+
+/* پاک کردن خطا هنگام تایپ */
+document.querySelectorAll('input').forEach(input => {
+    input.addEventListener('input', function() {
+        const group = this.closest('.form-group');
+        if (group) group.classList.remove('error');
+    });
+});
+
+/* ===== هشدار ===== */
+function showAlert(text, type = 'error') {
+    const alert = document.getElementById('alertBox');
+    const alertText = document.getElementById('alertText');
+    const alertIcon = document.getElementById('alertIcon');
+
+    alertText.textContent = text;
+    alertIcon.textContent = type === 'success' ? '✓' : '⚠️';
+    alert.classList.toggle('success-alert', type === 'success');
+    alert.style.display = 'flex';
+
+    setTimeout(() => alert.classList.add('show'), 50);
+
+    setTimeout(() => {
+        if (alert.classList.contains('show')) closeAlert();
+    }, 5000);
+}
+
+function closeAlert() {
+    const alert = document.getElementById('alertBox');
+    alert.classList.remove('show');
+    setTimeout(() => {
+        alert.style.display = 'none';
+    }, 500);
+}
+
+/* ===== ارسال فرم ===== */
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const nationalCode = document.getElementById('nationalCode').value.trim();
+    const password = passwordInput.value;
+    const remember = document.getElementById('remember').checked;
+
+    let isValid = true;
+
+    /* کد ملی */
+    if (!/^[0-9]{10}$/.test(nationalCode)) {
+        setError('group-national');
+        isValid = false;
+    } else setSuccess('group-national');
+
+    /* رمز */
+    if (password.length < 8) {
+        setError('group-password');
+        isValid = false;
+    } else setSuccess('group-password');
+
+    if (!isValid) {
+        showAlert('لطفاً خطاهای فرم را برطرف کنید', 'error');
+        const firstError = document.querySelector('.form-group.error');
+        if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
+
+    /* ===== بررسی کاربر ثبت‌نام شده ===== */
+    const savedUser = JSON.parse(localStorage.getItem('user') || 'null');
+
+    if (!savedUser) {
+        showAlert('شما هنوز ثبت‌نام نکرده‌اید! ابتدا ثبت‌نام کنید.', 'error');
+        setTimeout(() => {
+            window.location.href = 'Sign Up.html';
+        }, 2500);
+        return;
+    }
+
+    /* شبیه‌سازی ارسال */
+    submitBtn.classList.add('loading');
+    submitBtn.disabled = true;
+
+    setTimeout(() => {
+        /* بررسی تطابق کد ملی (اگه توی localStorage ذخیره شده) */
+        // چون توی صفحه ثبت‌نام کد ملی ذخیره نشده، فعلاً فقط چک می‌کنیم که کاربری وجود داره
+        // اگه خواستی می‌تونی توی صفحه ثبت‌نام فیلد کد ملی هم اضافه کنی و اینجا چک کنی
+
+        /* ذخیره وضعیت ورود */
+        localStorage.setItem('isLoggedIn', 'true');
+        if (remember) {
+            localStorage.setItem('rememberMe', 'true');
+        }
+
+        /* نمایش پیام موفقیت */
+        formContainer.style.display = 'none';
+        successMessage.style.display = 'block';
+
+        /* بعد از ۳ ثانیه انتقال به صفحه اصلی */
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 2500);
+
+    }, 1500);
+});
+
+/* اگه کاربر قبلاً وارد شده، مستقیم بره به صفحه اصلی */
+window.addEventListener('load', () => {
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+        // اگه خواستی این رو فعال کنی، کاربر مستقیم میره صفحه اصلی
+        // window.location.href = 'index.html';
+    }
+});
+</script>
+
+</body>
+</html>

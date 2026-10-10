@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مشاوره آنلاین | AutoMotor</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; }
+
+:root {
+    --black: #0d0d0d;
+    --dark: #1a1a1a;
+    --gray-dark: #2a2a2a;
+    --gray: #3a3a3a;
+    --gray-mid: #555;
+    --gray-light: #888;
+    --gray-lighter: #b0b0b0;
+    --white: #f5f5f5;
+    --border: #333;
+    --error: #e74c3c;
+    --success: #2ecc71;
+    --accent: #4a90e2;
+}
+
+body {
+    background: var(--black);
+    color: var(--white);
+    line-height: 1.6;
+    height: 100vh;
+    overflow: hidden;
+    background-image:
+        radial-gradient(circle at 20% 20%, rgba(80,80,80,0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(60,60,60,0.15) 0%, transparent 50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* ===== Container ===== */
+.chat-container {
+    width: 100%;
+    max-width: 900px;
+    height: 90vh;
+    max-height: 750px;
+    background: var(--dark);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+    animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Header ===== */
+.chat-header {
+    background: var(--gray-dark);
+    border-bottom: 1px solid var(--border);
+    padding: 15px 25px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+}
+
+.chat-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gray-mid), var(--gray-light), var(--gray-mid));
+}
+
+.agent-avatar {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--gray-mid), var(--gray));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    border: 2px solid var(--gray-light);
+    position: relative;
+    flex-shrink: 0;
+}
+
+.agent-avatar::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    background: var(--success);
+    border-radius: 50%;
+    border: 2px solid var(--gray-dark);
+    animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(46,204,113,0.7); }
+    50% { box-shadow: 0 0 0 6px rgba(46,204,113,0); }
+}
+
+.agent-info {
+    flex: 1;
+}
+
+.agent-info h3 {
+    font-size: 16px;
+    margin-bottom: 3px;
+    color: var(--white);
+}
+
+.agent-info p {
+    font-size: 12px;
+    color: var(--success);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.agent-info p::before {
+    content: '●';
+    font-size: 10px;
+}
+
+.chat-header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.header-btn {
+    width: 38px;
+    height: 38px;
+    background: var(--gray);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    color: var(--gray-lighter);
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.header-btn:hover {
+    background: var(--gray-mid);
+    color: var(--white);
+    transform: scale(1.1);
+}
+
+/* ===== Messages Area ===== */
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    scroll-behavior: smooth;
+}
+
+.chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: var(--gray-dark);
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: var(--gray-mid);
+    border-radius: 3px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-light);
+}
+
+/* Date Divider */
+.date-divider {
+    text-align: center;
+    margin: 10px 0;
+    position: relative;
+}
+
+.date-divider span {
+    background: var(--dark);
+    color: var(--gray-light);
+    padding: 0 15px;
+    font-size: 11px;
+    position: relative;
+    z-index: 2;
+}
+
+.date-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    height: 1px;
+    background: var(--border);
+}
+
+/* Message Bubbles */
+.message {
+    display: flex;
+    gap: 10px;
+    max-width: 75%;
+    animation: messageIn 0.4s ease;
+}
+
+@keyframes messageIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message.bot {
+    align-self: flex-start;
+}
+
+.message.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.message-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    border: 2px solid var(--border);
+}
+
+.message.bot .message-avatar {
+    background: linear-gradient(135deg, var(--gray-mid), var(--gray));
+}
+
+.message.user .message-avatar {
+    background: linear-gradient(135deg, #4a90e2, #357abd);
+}
+
+.message-bubble {
+    padding: 12px 18px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.6;
+    position: relative;
+    word-wrap: break-word;
+}
+
+.message.bot .message-bubble {
+    background: var(--gray-dark);
+    color: var(--white);
+    border-top-right-radius: 4px;
+    border: 1px solid var(--border);
+}
+
+.message.user .message-bubble {
+    background: linear-gradient(135deg, #4a90e2, #357abd);
+    color: white;
+    border-top-left-radius: 4px;
+}
+
+.message-time {
+    font-size: 10px;
+    color: var(--gray-light);
+    margin-top: 5px;
+    display: block;
+    text-align: left;
+}
+
+.message.user .message-time {
+    text-align: right;
+    color: rgba(255,255,255,0.7);
+}
+
+/* Typing Indicator */
+.typing-indicator {
+    display: flex;
+    gap: 10px;
+    max-width: 75%;
+    animation: messageIn 0.4s ease;
+}
+
+.typing-indicator .message-avatar {
+    background: linear-gradient(135deg, var(--gray-mid), var(--gray));
+}
+
+.typing-bubble {
+    background: var(--gray-dark);
+    border: 1px solid var(--border);
+    padding: 15px 20px;
+    border-radius: 18px;
+    border-top-right-radius: 4px;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.typing-bubble span {
+    width: 8px;
+    height: 8px;
+    background: var(--gray-light);
+    border-radius: 50%;
+    animation: typing 1.4s infinite;
+}
+
+.typing-bubble span:nth-child(2) { animation-delay: 0.2s; }
+.typing-bubble span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typing {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-8px); opacity: 1; }
+}
+
+/* Quick Replies */
+.quick-replies {
+    padding: 10px 25px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--border);
+    background: var(--dark);
+    flex-shrink: 0;
+}
+
+.quick-reply {
+    padding: 8px 16px;
+    background: var(--gray-dark);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    color: var(--gray-lighter);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: inherit;
+    white-space: nowrap;
+}
+
+.quick-reply:hover {
+    background: var(--gray);
+    color: var(--white);
+    border-color: var(--gray-mid);
+    transform: translateY(-2px);
+}
+
+/* ===== Input Area ===== */
+.chat-input-area {
+    padding: 15px 25px 20px;
+    background: var(--dark);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    flex-shrink: 0;
+}
+
+.chat-input-wrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--gray-dark);
+    border: 2px solid var(--border);
+    border-radius: 25px;
+    transition: all 0.3s;
+    padding: 0 15px;
+}
+
+.chat-input-wrapper:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(74,144,226,0.1);
+}
+
+.chat-input {
+    flex: 1;
+    padding: 14px 5px;
+    background: transparent;
+    border: none;
+    color: var(--white);
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    resize: none;
+    max-height: 100px;
+    min-height: 24px;
+    line-height: 1.5;
+}
+
+.chat-input::placeholder {
+    color: var(--gray-light);
+}
+
+.input-action {
+    background: none;
+    border: none;
+    color: var(--gray-light);
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px;
+    transition: color 0.3s;
+    flex-shrink: 0;
+}
+
+.input-action:hover {
+    color: var(--white);
+}
+
+.send-btn {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #4a90e2, #357abd);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.send-btn:hover:not(:disabled) {
+    transform: scale(1.1) rotate(15deg);
+    box-shadow: 0 8px 20px rgba(74,144,226,0.4);
+}
+
+.send-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    body {
+        padding: 0;
+    }
+    .chat-container {
+        height: 100vh;
+        max-height: 100vh;
+        border-radius: 0;
+        border: none;
+    }
+    .message {
+        max-width: 85%;
+    }
+    .chat-messages {
+        padding: 15px;
+    }
+    .chat-input-area {
+        padding: 12px 15px 15px;
+    }
+    .quick-replies {
+        padding: 8px 15px;
+    }
+    .agent-info h3 {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 500px) {
+    .header-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 14px;
+    }
+    .agent-avatar {
+        width: 44px;
+        height: 44px;
+        font-size: 20px;
+    }
+    .message-avatar {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+    }
+    .message-bubble {
+        padding: 10px 14px;
+        font-size: 13px;
+    }
+    .send-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 16px;
+    }
+}
+
+/* ===== Scroll to bottom button ===== */
+.scroll-bottom {
+    position: absolute;
+    bottom: 130px;
+    left: 25px;
+    width: 40px;
+    height: 40px;
+    background: var(--gray-mid);
+    border: 1px solid var(--gray-light);
+    border-radius: 50%;
+    color: var(--white);
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.3s;
+    z-index: 5;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+.scroll-bottom.show {
+    display: flex;
+}
+
+.scroll-bottom:hover {
+    background: var(--gray-light);
+    transform: translateY(-3px);
+}
+</style>
+</head>
+<body>
+
+<div class="chat-container">
+
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="agent-avatar">👨‍💼</div>
+        <div class="agent-info">
+            <h3>پشتیبانی AutoMotor</h3>
+            <p>آنلاین - پاسخگویی فوری</p>
+        </div>
+        <div class="chat-header-actions">
+            <button class="header-btn" title="تماس تلفنی">📞</button>
+            <button class="header-btn" title="پاک کردن گفتگو" onclick="clearChat()">🗑️</button>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-messages" id="chatMessages">
+
+        <div class="date-divider"><span>امروز</span></div>
+
+        <div class="message bot">
+            <div class="message-avatar">👨‍💼</div>
+            <div>
+                <div class="message-bubble">
+                    سلام و خوش آمدید به <strong>AutoMotor</strong> 🚗<br>
+                    من مشاور شما هستم. چطور می‌تونم کمکتون کنم؟
+                </div>
+                <span class="message-time" id="time1"></span>
+            </div>
+        </div>
+
+        <div class="message bot">
+            <div class="message-avatar">👨‍💼</div>
+            <div>
+                <div class="message-bubble">
+                    برای شروع، یکی از گزینه‌های زیر رو انتخاب کنید یا سوال خودتون رو بنویسید 👇
+                </div>
+                <span class="message-time" id="time2"></span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scroll bottom -->
+    <button class="scroll-bottom" id="scrollBottom" onclick="scrollToBottom()">↓</button>
+
+    <!-- Quick Replies -->
+    <div class="quick-replies" id="quickReplies">
+        <button class="quick-reply" onclick="sendQuickReply('راهنمای خرید خودرو')">🚗 راهنمای خرید خودرو</button>
+        <button class="quick-reply" onclick="sendQuickReply('شرایط فروش اقساطی')">💳 شرایط فروش اقساطی</button>
+        <button class="quick-reply" onclick="sendQuickReply('قیمت خودروها')">💰 قیمت خودروها</button>
+        <button class="quick-reply" onclick="sendQuickReply('خدمات پس از فروش')">🔧 خدمات پس از فروش</button>
+    </div>
+
+    <!-- Input Area -->
+    <div class="chat-input-area">
+        <div class="chat-input-wrapper">
+            <button class="input-action" title="پیوست فایل">📎</button>
+            <textarea 
+                class="chat-input" 
+                id="chatInput" 
+                placeholder="پیام خود را بنویسید..." 
+                rows="1"
+                onkeydown="handleKeyDown(event)"
+            ></textarea>
+            <button class="input-action" title="ایموجی">😊</button>
+        </div>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">➤</button>
+    </div>
+
+</div>
+
+<script>
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+const scrollBottom = document.getElementById('scrollBottom');
+
+/* ===== ساعت ===== */
+function getCurrentTime() {
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    return `${hours}:${minutes}`;
+}
+
+document.getElementById('time1').textContent = getCurrentTime();
+document.getElementById('time2').textContent = getCurrentTime();
+
+/* ===== اسکرول به پایین ===== */
+function scrollToBottom() {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+/* ===== نمایش/مخفی دکمه اسکرول ===== */
+chatMessages.addEventListener('scroll', () => {
+    const isNearBottom = chatMessages.scrollHeight - chatMessages.scrollTop - chatMessages.clientHeight < 100;
+    scrollBottom.classList.toggle('show', !isNearBottom);
+});
+
+/* ===== Enter برای ارسال ===== */
+function handleKeyDown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+}
+
+/* ===== Auto-resize textarea ===== */
+chatInput.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+});
+
+/* ===== ارسال پیام ===== */
+function sendMessage() {
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    addMessage(text, 'user');
+    chatInput.value = '';
+    chatInput.style.height = 'auto';
+
+    // پاسخ بات
+    setTimeout(() => {
+        showTyping();
+        setTimeout(() => {
+            hideTyping();
+            const botReply = getBotReply(text);
+            addMessage(botReply, 'bot');
+        }, 1200 + Math.random() * 800);
+    }, 400);
+}
+
+/* ===== ارسال پاسخ سریع ===== */
+function sendQuickReply(text) {
+    addMessage(text, 'user');
+    setTimeout(() => {
+        showTyping();
+        setTimeout(() => {
+            hideTyping();
+            const botReply = getBotReply(text);
+            addMessage(botReply, 'bot');
+        }, 1200 + Math.random() * 800);
+    }, 400);
+}
+
+/* ===== افزودن پیام ===== */
+function addMessage(text, type) {
+    const message = document.createElement('div');
+    message.className = `message ${type}`;
+
+    const avatar = type === 'bot' ? '👨‍💼' : '👤';
+    const time = getCurrentTime();
+
+    message.innerHTML = `
+        <div class="message-avatar">${avatar}</div>
+        <div>
+            <div class="message-bubble">${text}</div>
+            <span class="message-time">${time}</span>
+        </div>
+    `;
+
+    chatMessages.appendChild(message);
+    scrollToBottom();
+}
+
+/* ===== Typing Indicator ===== */
+function showTyping() {
+    const typing = document.createElement('div');
+    typing.className = 'typing-indicator';
+    typing.id = 'typingIndicator';
+    typing.innerHTML = `
+        <div class="message-avatar">👨‍💼</div>
+        <div class="typing-bubble">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    `;
+    chatMessages.appendChild(typing);
+    scrollToBottom();
+}
+
+function hideTyping() {
+    const typing = document.getElementById('typingIndicator');
+    if (typing) typing.remove();
+}
+
+/* ===== پاسخ‌های هوشمند بات ===== */
+function getBotReply(text) {
+    const t = text.toLowerCase();
+
+    // راهنمای خرید
+    if (t.includes('راهنما') || t.includes('خرید') || t.includes('مشاوره')) {
+        return `برای خرید خودرو، این موارد رو پیشنهاد می‌کنم:<br><br>
+        🔹 <strong>بودجه:</strong> محدوده قیمتی خودتون رو مشخص کنید<br>
+        🔹 <strong>کاربری:</strong> شهری، جاده‌ای یا خانوادگی؟<br>
+        🔹 <strong>نوع سوخت:</strong> بنزینی، هیبریدی یا برقی؟<br><br>
+        چه نوع خودرویی مد نظرتونه؟ 🚗`;
+    }
+
+    // اقساط
+    if (t.includes('اقساط') || t.includes('قسط') || t.includes('شرایط')) {
+        return `شرایط فروش اقساطی ما:<br><br>
+        ✅ پیش‌پرداخت از ۳۰٪<br>
+        ✅ بازپرداخت تا ۳۶ ماه<br>
+        ✅ بدون نیاز به ضامن (در برخی موارد)<br>
+        ✅ تحویل فوری<br><br>
+        برای اطلاعات بیشتر با شماره <strong>۰۲۱-۱۲۳۴۵۶۷۸</strong> تماس بگیرید 📞`;
+    }
+
+    // قیمت
+    if (t.includes('قیمت') || t.includes('هزینه') || t.includes('چند')) {
+        return `قیمت خودروها بسته به مدل و سال ساخت متفاوته:<br><br>
+        🚗 اقتصادی: از ۱.۵ میلیارد تومان<br>
+        🚙 میان‌رده: از ۳ میلیارد تومان<br>
+        🏎️ لوکس: از ۶ میلیارد تومان<br><br>
+        برای قیمت دقیق، مدل مورد نظرتون رو بگید 💰`;
+    }
+
+    // خدمات پس از فروش
+    if (t.includes('خدمات') || t.includes('گارانتی') || t.includes('پس از فروش')) {
+        return `خدمات پس از فروش AutoMotor:<br><br>
+        🛡️ گارانتی رسمی تا ۵ سال<br>
+        🔧 تعمیرات تخصصی در نمایندگی‌های مجاز<br>
+        🚚 امداد خودرو در جاده<br>
+        📦 تأمین قطعات اصلی<br><br>
+        هر سوالی دارید بپرسید! 😊`;
+    }
+
+    // برند
+    if (t.includes('برند') || t.includes('تویوتا') || t.includes('بنز') || t.includes('بی ام و') || t.includes('تسلا')) {
+        return `ما با بهترین برندهای جهانی همکاری می‌کنیم:<br><br>
+        🇯🇵 تویوتا، هوندا، نیسان<br>
+        🇩🇪 بی‌ام‌و، مرسدس بنز، آئودی، پورشه<br>
+        🇰🇷 کیا، هیوندای<br>
+        ⚡ تسلا<br><br>
+        کدوم برند مورد علاقه‌تونه؟ 🚗`;
+    }
+
+    // الکتریکی
+    if (t.includes('برقی') || t.includes('الکتریکی') || t.includes('تسلا') || t.includes('هیبرید')) {
+        return `خودروهای برقی و هیبریدی ما:<br><br>
+        ⚡ تسلا Model 3 - قیمت از ۴.۲ میلیارد<br>
+        ⚡ تسلا Model Y - قیمت از ۵.۸ میلیارد<br>
+        🔋 هیبریدی‌ها: تویوتا کمری هیبرید<br><br>
+        خودروی برقی مزایای زیادی داره: هزینه سوخت پایین، معافیت مالیاتی و... 🌱`;
+    }
+
+    // سلام
+    if (t.includes('سلام') || t.includes('درود') || t.includes('hi') || t.includes('hello')) {
+        return `سلام و درود! 😊<br>
+        چطور می‌تونم کمکتون کنم؟ برای مشاوره خرید خودرو، شرایط اقساط یا هر سوال دیگه‌ای در خدمتم.`;
+    }
+
+    // ممنون
+    if (t.includes('ممنون') || t.includes('مرسی') || t.includes('thanks')) {
+        return `خواهش می‌کنم! 🌹<br>
+        اگه سوال دیگه‌ای داشتید، در خدمتم. روز خوبی داشته باشید!`;
+    }
+
+    // خداحافظ
+    if (t.includes('خداحافظ') || t.includes('بای') || t.includes('bye')) {
+        return `خدانگهدار! 👋<br>
+        امیدوارم تونسته باشم کمکتون کنم. هر وقت سوالی داشتید، همینجا هستم 😊`;
+    }
+
+    // پیش‌فرض
+    return `ممنون از پیامتون! 🙏<br><br>
+    برای پاسخ دقیق‌تر، لطفاً سوال خودتون رو واضح‌تر بپرسید یا با شماره <strong>۰۲۱-۱۲۳۴۵۶۷۸</strong> تماس بگیرید.<br><br>
+    می‌تونم در این موارد کمکتون کنم:<br>
+    🚗 راهنمای خرید خودرو<br>
+    💳 شرایط فروش اقساطی<br>
+    💰 قیمت خودروها<br>
+    🔧 خدمات پس از فروش`;
+}
+
+/* ===== پاک کردن چت ===== */
+function clearChat() {
+    if (confirm('آیا مطمئن هستید که می‌خواهید گفتگو را پاک کنید؟')) {
+        chatMessages.innerHTML = `
+            <div class="date-divider"><span>امروز</span></div>
+            <div class="message bot">
+                <div class="message-avatar">👨‍💼</div>
+                <div>
+                    <div class="message-bubble">
+                        گفتگو پاک شد. چطور می‌تونم کمکتون کنم؟ 😊
+                    </div>
+                    <span class="message-time">${getCurrentTime()}</span>
+                </div>
+            </div>
+        `;
+    }
+}
+
+/* ===== Focus روی input ===== */
+window.addEventListener('load', () => {
+    chatInput.focus();
+    scrollToBottom();
+});
+</script>
+
+</body>
+</html>
